@@ -1,0 +1,23 @@
+<!-- client_orders.html -->
+
+<h1>{{ client.name }}'s Orders</h1>
+
+{% if orders %}
+    <ul>
+        {% for order in orders %}
+            <li>
+                <strong>Order ID:</strong> {{ order.id }}<br>
+                <strong>Total Amount:</strong> ${{ order.total_amount }}<br>
+                <strong>Order Date:</strong> {{ order.order_date }}<br>
+                <strong>Products:</strong>
+                <ul>
+                    {% for product in order.products.all %}
+                        <li>{{ product.name }} - Quantity: {{ product.quantity }} - Price: ${{ product.price }}</li>
+                    {% endfor %}
+                </ul>
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No orders available for this client.</p>
+{% endif %}
