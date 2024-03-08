@@ -5,21 +5,31 @@ from django.shortcuts import render
 
 # views.py
 
-from django.shortcuts import render
-from .models import Client, Order, Product
-from django.utils import timezone
-from datetime import timedelta
+from django.shortcuts import render, get_object_or_404
+from .models import Client, Product, Order, OrderItem
 
-def client_ordered_products(request, client_id, days):
-    client = Client.objects.get(pk=client_id)
-    end_date = timezone.now()
-    start_date = end_date - timedelta(days=days)
-    ordered_products = Product.objects.filter(order__client=client, order__order_date__range=(start_date, end_date)).distinct()
+def client_detail(request, client_id):
+    client = get_object_or_404(Client, pk=client_id)
+    orders = Order.objects.filter(client=client)
+    return render(request, 'client_detail.html', {'client': client, 'orders': orders})
 
-    context = {
-        'client': client,
-        'ordered_products': ordered_products,
-        'days': days,
-    }
+def client_list(request):
+    clients = Client.objects.all()
+    return render(request, 'client_list.html', {'clients': clients})
 
-    return render(request, 'client_ordered_products.html', context)
+def product_detail(request, product_id):
+    product = get_object_or_404(Product, pk=product_id)
+    orders = OrderItem.objects.filter(product=product).select_related('order')
+    return render(request, 'product_detail.html', {'product': product, 'orders': orders})
+
+def product_list(request):
+    products = Product.objects.all()
+    return render(request, 'product_list.html', {'products': products})
+
+def order_detail(request, order_id):
+    order = get_object_or_404(Order, pk=order_id)
+    return render(request, 'order_detail.html', {'order': order})
+
+def order_list(request):
+    orders = Order.objects.all()
+    return render(request, 'order_list.html', {'orders': orders})
